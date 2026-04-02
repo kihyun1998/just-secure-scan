@@ -1,108 +1,108 @@
-## just-secure-scan — 공통 원칙
+## just-secure-scan — Common Principles
 
-> 아래 규칙은 `/secure-scan-*` 커맨드 실행 시에만 적용된다. 다른 작업에는 영향을 주지 않는다.
+> The rules below apply only when executing `/secure-scan-*` skills. They do not affect other tasks.
 
-### 심각도 기준
+### Severity Levels
 
-| 등급 | 기준 |
-|------|------|
-| **Critical** | 외부 공격자가 인증 없이 악용 가능. 데이터 유출/변조/삭제 직결 |
-| **Warning** | 특정 조건에서 악용 가능하거나, 방어 계층이 부족한 상태 |
-| **Info** | 직접적 위협은 낮으나 보안 모범 사례에 어긋남 |
+| Level | Criteria |
+|-------|----------|
+| **Critical** | Exploitable by an external attacker without authentication. Directly leads to data leak/modification/deletion |
+| **Warning** | Exploitable under specific conditions, or missing a defense layer |
+| **Info** | Low direct threat but deviates from security best practices |
 
-동일 이슈에 대해 모든 커맨드가 동일 심각도를 적용해야 한다. 세부 커맨드(`/secure-scan-rls` 등)와 전체 커맨드(`/secure-scan-nextjs` 등)의 심각도가 달라서는 안 된다.
+All skills must apply the same severity for the same issue. Severity must not differ between detailed skills (`/secure-scan-rls`, etc.) and comprehensive skills (`/secure-scan-nextjs`, etc.).
 
-### 중복 보고 방지
+### Duplicate Prevention
 
-여러 커맨드를 순차 실행할 때 동일 이슈가 중복 보고되지 않도록 한다:
-- 동일 `파일경로:라인`에 대해 이미 보고된 이슈가 현재 세션에 있으면 건너뛴다.
-- 세부 커맨드와 전체 커맨드의 점검 항목이 겹치는 경우, 세부 커맨드가 더 상세하다. 전체 커맨드 실행 후 세부 커맨드를 돌리면 추가 발견만 보고한다.
+When running multiple skills sequentially, avoid reporting the same issue twice:
+- If an issue at the same `file:line` was already reported in the current session, skip it.
+- Detailed skills are more thorough than comprehensive skills for overlapping checks. Running a detailed skill after a comprehensive one should only report additional findings.
 
-### 출력 포맷
+### Output Format
 
-모든 커맨드는 아래 포맷을 따른다. 발견 항목이 없는 등급은 생략한다.
+All skills follow the format below. Omit severity sections with no findings.
 
 ```
-# secure-scan-<커맨드명> 결과
+# secure-scan-<skill-name> Results
 
-## Critical — 즉시 수정 필요
-- `파일경로:라인` — 한 줄 요약
-  **영향**: 공격자가 어떻게 악용할 수 있는지
-  **수정**: 구체적 수정 방법
+## Critical — Immediate action required
+- `file:line` — one-line summary
+  **Impact:** how an attacker can exploit this
+  **Fix:** specific remediation steps
 
-## Warning — 검토 필요
-- `파일경로:라인` — 한 줄 요약
-  **영향**: 어떤 조건에서 문제가 되는지
-  **수정**: 구체적 수정 방법
+## Warning — Review required
+- `file:line` — one-line summary
+  **Impact:** under what conditions this becomes a problem
+  **Fix:** specific remediation steps
 
-## Info — 권장사항
-- `파일경로:라인` — 한 줄 요약
-  **수정**: 구체적 수정 방법
+## Info — Recommendations
+- `file:line` — one-line summary
+  **Fix:** specific remediation steps
 
-## Suppressed (N건)
+## Suppressed (N items)
 
 ---
-점검 범위: N개 파일 분석됨
-점검 불가 항목: (해당 시 표시, 예: "RLS — SQL 마이그레이션 파일 없음")
-이 결과는 코드 정적 분석 기반이며, 런타임/인프라 설정은 반영되지 않음.
+Scope: N files analyzed
+Not checked: (if applicable, e.g., "RLS — no SQL migration files found")
+These results are based on static code analysis and do not reflect runtime or infrastructure configuration.
 ```
 
-- 발견된 이슈가 전혀 없으면 "발견된 이슈 없음"을 출력한다.
-- Suppressed만 있고 다른 등급이 없으면 "발견된 이슈 없음 (억제 N건)"을 출력한다.
-- **시크릿 값 마스킹**: 발견된 시크릿은 앞 4자 + `****` + 뒤 4자로 마스킹한다. 전체 값을 출력하지 않는다.
+- If no issues are found, output "No issues found".
+- If only suppressed items exist, output "No issues found (N items suppressed)".
+- **Secret masking**: mask discovered secrets as first 4 chars + `****` + last 4 chars. Never output the full value.
 
-### False Positive 억제
+### False Positive Suppression
 
-**억제**(보고 안 함)와 **등급 하향**(심각도를 낮춤)은 다른 동작이다. 각 커맨드에서 명시적으로 구분한다.
+**Suppression** (not reported) and **severity downgrade** (lowered severity) are distinct behaviors. Each skill must distinguish them explicitly.
 
-#### 인라인 주석
+#### Inline Comments
 
-해당 줄 끝에 `secure-scan-ignore: 사유` 주석이 있으면 보고하지 않는다. 언어별 주석 문법을 인식한다:
+If a line ends with a `secure-scan-ignore: reason` comment, do not report it. Recognize language-specific comment syntax:
 
-- JS/TS/Rust/Go: `// secure-scan-ignore: 사유`
-- Python/Ruby/YAML: `# secure-scan-ignore: 사유`
-- SQL: `-- secure-scan-ignore: 사유`
-- HTML/JSX: `{/* secure-scan-ignore: 사유 */}` 또는 `<!-- secure-scan-ignore: 사유 -->`
+- JS/TS/Rust/Go: `// secure-scan-ignore: reason`
+- Python/Ruby/YAML: `# secure-scan-ignore: reason`
+- SQL: `-- secure-scan-ignore: reason`
+- HTML/JSX: `{/* secure-scan-ignore: reason */}` or `<!-- secure-scan-ignore: reason -->`
 
-#### 프로젝트 억제 파일
+#### Project Suppression File
 
-프로젝트 루트의 `.secure-scan-ignore` 파일에 등록된 항목은 보고하지 않는다.
+Items listed in `.secure-scan-ignore` at the project root are not reported.
 
 ```
 # .secure-scan-ignore
-# 형식: 파일경로 또는 glob패턴  # 사유
-# 해당 파일의 모든 점검 결과를 억제한다.
-src/lib/supabase-admin.ts  # 서버 전용 모듈, 번들 미포함 확인됨
-tests/fixtures/**          # 테스트 fixture, 의도적 취약 코드
+# Format: file path or glob pattern  # reason
+# Suppresses all findings for the matched files.
+src/lib/supabase-admin.ts  # server-only module, confirmed not in client bundle
+tests/fixtures/**          # test fixtures, intentionally vulnerable code
 ```
 
-- glob 패턴 지원 (`*`, `**`)
-- 경로는 프로젝트 루트 기준 상대 경로
-- `#`으로 시작하는 줄은 주석, 빈 줄은 무시
+- Supports glob patterns (`*`, `**`)
+- Paths are relative to the project root
+- Lines starting with `#` are comments; blank lines are ignored
 
-억제된 항목은 Suppressed 섹션에 건수만 표시한다.
+Suppressed items are shown only as a count in the Suppressed section.
 
-### 탐색 원칙
+### Discovery Principles
 
-> 이 원칙은 `/secure-scan-*` 커맨드에만 적용된다.
+> These principles apply only to `/secure-scan-*` skills.
 
-- 전체 파일을 무작정 읽지 않는다. 각 커맨드에 명시된 탐색 패턴을 우선 실행한다.
-- `$ARGUMENTS`가 주어지면 해당 경로로 범위를 제한한다. 단, 설정 파일(`.env*`, `Cargo.toml`, `next.config.*` 등)은 경로 제한과 무관하게 항상 점검한다.
-- 모든 grep/검색에서 빌드 아티팩트를 제외한다: `node_modules/`, `.next/`, `target/`, `dist/`, `build/`, `vendor/`
-- 점검 결과 리포트 하단에 `점검 범위: N개 파일 분석됨`을 명시한다.
+- Do not read entire files blindly. Execute the discovery patterns specified in each skill first.
+- If `$ARGUMENTS` is provided, limit scope to that path. However, config files (`.env*`, `Cargo.toml`, `next.config.*`, etc.) are always checked regardless of path restrictions.
+- Exclude build artifacts from all grep/search operations: `node_modules/`, `.next/`, `target/`, `dist/`, `build/`, `vendor/`
+- Include `Scope: N files analyzed` at the bottom of every report.
 
-### 외부 도구 Fallback
+### External Tool Fallback
 
-> 이 규칙은 `/secure-scan-*` 커맨드에만 적용된다.
+> These rules apply only to `/secure-scan-*` skills.
 
-`npm audit`, `cargo audit`, `supabase` CLI 등 외부 도구가 설치되어 있으면 실행 결과를 활용한다.
-- `npm audit`: `npm audit --json 2>/dev/null | head -100` 으로 요약만 가져온다.
-- `cargo audit`: `cargo audit --json 2>/dev/null | head -100` 으로 요약만 가져온다.
-- 미설치 시에는 lock 파일을 직접 읽어 확인하되, Claude의 학습 데이터 이후 공개된 CVE는 탐지 불가함을 리포트에 명시한다.
-- 외부 도구 실행 실패 시 에러를 무시하고 fallback으로 진행한다.
+If external tools (`npm audit`, `cargo audit`, `supabase` CLI, etc.) are installed, use their output:
+- `npm audit`: `npm audit --json 2>/dev/null | head -100` — fetch summary only.
+- `cargo audit`: `cargo audit --json 2>/dev/null | head -100` — fetch summary only.
+- If not installed, read lock files directly for analysis. Note in the report that CVEs published after Claude's training data cutoff cannot be detected.
+- If external tool execution fails, ignore the error and proceed with fallback.
 
-### 점검 가능 범위
+### Analysis Scope Limitations
 
-각 커맨드는 코드를 읽고 패턴을 매칭하는 정적 분석이다. 다음은 점검 가능 범위의 한계:
-- 다중 파일에 걸친 데이터 흐름 추적은 1~2단계 호출 체인까지만 추적한다. 그 이상은 "추적 불가, 수동 확인 필요"로 보고한다.
-- Grep 카운트 기반 통계(예: unsafe 블록 수)는 주석/문자열 내 false match를 포함할 수 있다. "약 N개"로 표현한다.
+Each skill performs static analysis by reading code and matching patterns. Limitations include:
+- Cross-file data flow tracing is limited to 1–2 call chain levels. Beyond that, report as "cannot trace, manual verification required".
+- Grep-based statistics (e.g., number of unsafe blocks) may include false matches from comments/strings. Express as "approximately N".
