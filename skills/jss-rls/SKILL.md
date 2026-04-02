@@ -1,13 +1,13 @@
 ---
-name: secure-scan-rls
+name: jss-rls
 description: Scan Supabase Row Level Security (RLS) policies
 argument-hint: <optional: migration path>
 allowed-tools: Read Grep Glob Bash
 ---
 
-# secure-scan-rls
+# jss-rls
 
-Scans Supabase Row Level Security policies. Focuses on SQL analysis — source code path analysis belongs to `/secure-scan-auth` and `/secure-scan-nextjs`.
+Scans Supabase Row Level Security policies. Focuses on SQL analysis — source code path analysis belongs to `/jss-auth` and `/jss-nextjs`.
 
 ## Scan Scope
 

@@ -1,11 +1,11 @@
 ---
-name: secure-scan-nextjs
+name: jss-nextjs
 description: Comprehensive Next.js + Supabase security scan
 argument-hint: <optional: path to scan>
 allowed-tools: Read Grep Glob Bash
 ---
 
-# secure-scan-nextjs
+# jss-nextjs
 
 Scans security issues in Next.js + Supabase projects.
 If `$ARGUMENTS` is provided, scan only that path. Otherwise scan the entire project.
@@ -36,7 +36,7 @@ Run `ls` to check for `app/`, `src/app/`, `pages/`. Adjust path patterns accordi
 
 ### 1. Supabase RLS (Critical ~ Warning)
 
-**Aggregate all migration files** to determine final RLS state per table. Track `DROP TABLE`, `DISABLE ROW LEVEL SECURITY`, `DROP POLICY` to determine final state. Detailed rules match `/secure-scan-rls`:
+**Aggregate all migration files** to determine final RLS state per table. Track `DROP TABLE`, `DISABLE ROW LEVEL SECURITY`, `DROP POLICY` to determine final state. Detailed rules match `/jss-rls`:
 
 - RLS not enabled on a table → Critical
 - RLS enabled but no policies → Warning

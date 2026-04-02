@@ -1,11 +1,11 @@
 ---
-name: secure-scan-auth
+name: jss-auth
 description: Scan Next.js + Supabase authentication and authorization security issues
 argument-hint: <optional: path to scan>
 allowed-tools: Read Grep Glob Bash
 ---
 
-# secure-scan-auth
+# jss-auth
 
 Scans authentication and authorization security issues in Next.js + Supabase projects.
 

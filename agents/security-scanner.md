@@ -1,6 +1,6 @@
 ---
 name: security-scanner
-description: Detects project stack and performs a comprehensive security scan using the appropriate secure-scan-* commands. Reports findings in a unified format with severity ratings.
+description: Detects project stack and performs a comprehensive security scan using the appropriate jss-* commands. Reports findings in a unified format with severity ratings.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---
@@ -29,34 +29,34 @@ Examine the project root to determine the stack:
 | `Cargo.toml` with `[[bin]]` only | Rust binary (partial support) |
 | Both `package.json` and `Cargo.toml` | Monorepo — scan both |
 
-If the stack is not recognized, report it and run only `/secure-scan-secrets` (works on any project).
+If the stack is not recognized, report it and run only `/jss-secrets` (works on any project).
 
 ## Scan Execution Order
 
 Run scans in this order. Earlier scans inform later ones (e.g., secrets found in step 1 provide context for step 2).
 
 ### For Next.js + Supabase:
-1. `/secure-scan-secrets` — broadest, stack-agnostic
-2. `/secure-scan-nextjs` — full stack-specific scan
-3. Skip `/secure-scan-rls`, `/secure-scan-auth` — already covered by step 2
+1. `/jss-secrets` — broadest, stack-agnostic
+2. `/jss-nextjs` — full stack-specific scan
+3. Skip `/jss-rls`, `/jss-auth` — already covered by step 2
 
 ### For Rust:
-1. `/secure-scan-secrets` — broadest, stack-agnostic
-2. `/secure-scan-rust` — full stack-specific scan
-3. Skip `/secure-scan-unsafe`, `/secure-scan-ffi`, `/secure-scan-deps` — already covered by step 2
+1. `/jss-secrets` — broadest, stack-agnostic
+2. `/jss-rust` — full stack-specific scan
+3. Skip `/jss-unsafe`, `/jss-ffi`, `/jss-deps` — already covered by step 2
 
 ### For Monorepo (both):
-1. `/secure-scan-secrets` — once for entire repo
-2. `/secure-scan-nextjs` — scoped to frontend directory
-3. `/secure-scan-rust` — scoped to Rust crate directory
+1. `/jss-secrets` — once for entire repo
+2. `/jss-nextjs` — scoped to frontend directory
+3. `/jss-rust` — scoped to Rust crate directory
 
 ### When user requests a focused scan:
 If the user asks for a specific area (e.g., "check the RLS policies" or "audit unsafe code"), run only the relevant detail command instead of the full scan:
-- RLS questions → `/secure-scan-rls`
-- Auth questions → `/secure-scan-auth`
-- Unsafe code → `/secure-scan-unsafe`
-- FFI boundary → `/secure-scan-ffi`
-- Dependencies → `/secure-scan-deps`
+- RLS questions → `/jss-rls`
+- Auth questions → `/jss-auth`
+- Unsafe code → `/jss-unsafe`
+- FFI boundary → `/jss-ffi`
+- Dependencies → `/jss-deps`
 
 ## Pre-scan Checks
 
@@ -71,7 +71,7 @@ Before running any scan command, verify:
 When running multiple scan commands:
 - Track reported `file:line` pairs across commands
 - If a finding was already reported by an earlier command, skip it
-- Secrets found by `/secure-scan-secrets` should not be re-reported by `/secure-scan-nextjs` or `/secure-scan-rust`
+- Secrets found by `/jss-secrets` should not be re-reported by `/jss-nextjs` or `/jss-rust`
 
 ## Output Format
 
@@ -126,6 +126,6 @@ Example: `sk_l****890a`
 
 ## Error Handling
 
-- If stack detection fails → run `/secure-scan-secrets` only, report stack as "Unknown"
+- If stack detection fails → run `/jss-secrets` only, report stack as "Unknown"
 - If a scan command fails mid-execution → report partial results with a note
 - If the project is empty or has no source files → report "No source files found" and exit

@@ -1,13 +1,13 @@
 ---
-name: secure-scan-ffi
+name: jss-ffi
 description: Scan Rust FFI boundary security issues
 argument-hint: <optional: path to scan>
 allowed-tools: Read Grep Glob Bash
 ---
 
-# secure-scan-ffi
+# jss-ffi
 
-Scans FFI (Foreign Function Interface) boundary security in Rust projects. This skill provides more detailed FFI checks than `/secure-scan-unsafe`, which only performs brief FFI checks to avoid duplication.
+Scans FFI (Foreign Function Interface) boundary security in Rust projects. This skill provides more detailed FFI checks than `/jss-unsafe`, which only performs brief FFI checks to avoid duplication.
 
 ## Scan Scope
 

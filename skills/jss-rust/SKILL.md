@@ -1,11 +1,11 @@
 ---
-name: secure-scan-rust
+name: jss-rust
 description: Comprehensive Rust crate security scan
 argument-hint: <optional: path to scan>
 allowed-tools: Read Grep Glob Bash
 ---
 
-# secure-scan-rust
+# jss-rust
 
 Scans security issues in Rust crates.
 If `$ARGUMENTS` is provided, scan only that path. Otherwise scan the entire project.
@@ -94,7 +94,7 @@ Check only in library crates (`[lib]`). Skip binary crates (`[[bin]]`).
 
 ### 9. FFI Boundary (Critical ~ Warning)
 
-Detailed FFI checks are in `/secure-scan-ffi`. This skill checks only the essentials:
+Detailed FFI checks are in `/jss-ffi`. This skill checks only the essentials:
 
 - `extern "C"` function dereferencing `*const`/`*mut` without null check (Critical)
 - C string (`*const c_char`) received without null check before `CStr::from_ptr` (Critical)

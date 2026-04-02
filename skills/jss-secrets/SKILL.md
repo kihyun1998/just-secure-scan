@@ -1,11 +1,11 @@
 ---
-name: secure-scan-secrets
+name: jss-secrets
 description: Scan for hardcoded secrets, API keys, and credential exposure (stack-agnostic)
 argument-hint: <optional: path to scan>
 allowed-tools: Read Grep Glob Bash
 ---
 
-# secure-scan-secrets
+# jss-secrets
 
 Scans for hardcoded secrets, API keys, tokens, and passwords exposed in project source code.
 

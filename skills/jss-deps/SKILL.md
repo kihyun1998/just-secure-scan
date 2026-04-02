@@ -1,11 +1,11 @@
 ---
-name: secure-scan-deps
+name: jss-deps
 description: Scan dependency CVEs and security issues (npm/cargo)
 argument-hint: <optional: npm or cargo>
 allowed-tools: Read Grep Glob Bash
 ---
 
-# secure-scan-deps
+# jss-deps
 
 Scans project dependencies for known vulnerabilities (CVEs) and security configuration issues.
 Currently supports npm (Node.js) and cargo (Rust) ecosystems.

@@ -1,6 +1,6 @@
 ## just-secure-scan — Common Principles
 
-> The rules below apply only when executing `/secure-scan-*` skills. They do not affect other tasks.
+> The rules below apply only when executing `/jss-*` skills. They do not affect other tasks.
 
 ### Severity Levels
 
@@ -10,7 +10,7 @@
 | **Warning** | Exploitable under specific conditions, or missing a defense layer |
 | **Info** | Low direct threat but deviates from security best practices |
 
-All skills must apply the same severity for the same issue. Severity must not differ between detailed skills (`/secure-scan-rls`, etc.) and comprehensive skills (`/secure-scan-nextjs`, etc.).
+All skills must apply the same severity for the same issue. Severity must not differ between detailed skills (`/jss-rls`, etc.) and comprehensive skills (`/jss-nextjs`, etc.).
 
 ### Duplicate Prevention
 
@@ -23,7 +23,7 @@ When running multiple skills sequentially, avoid reporting the same issue twice:
 All skills follow the format below. Omit severity sections with no findings.
 
 ```
-# secure-scan-<skill-name> Results
+# jss-<skill-name> Results
 
 ## Critical — Immediate action required
 - `file:line` — one-line summary
@@ -84,7 +84,7 @@ Suppressed items are shown only as a count in the Suppressed section.
 
 ### Discovery Principles
 
-> These principles apply only to `/secure-scan-*` skills.
+> These principles apply only to `/jss-*` skills.
 
 - Do not read entire files blindly. Execute the discovery patterns specified in each skill first.
 - If `$ARGUMENTS` is provided, limit scope to that path. However, config files (`.env*`, `Cargo.toml`, `next.config.*`, etc.) are always checked regardless of path restrictions.
@@ -93,7 +93,7 @@ Suppressed items are shown only as a count in the Suppressed section.
 
 ### External Tool Fallback
 
-> These rules apply only to `/secure-scan-*` skills.
+> These rules apply only to `/jss-*` skills.
 
 If external tools (`npm audit`, `cargo audit`, `supabase` CLI, etc.) are installed, use their output:
 - `npm audit`: `npm audit --json 2>/dev/null | head -100` — fetch summary only.

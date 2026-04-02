@@ -1,13 +1,13 @@
 ---
-name: secure-scan-unsafe
+name: jss-unsafe
 description: Focused scan of Rust unsafe code
 argument-hint: <optional: path to scan>
 allowed-tools: Read Grep Glob Bash
 ---
 
-# secure-scan-unsafe
+# jss-unsafe
 
-Focused scan of `unsafe` code in Rust projects. Detailed FFI checks are handled by `/secure-scan-ffi`. This skill only briefly checks FFI-related unsafe to avoid duplication.
+Focused scan of `unsafe` code in Rust projects. Detailed FFI checks are handled by `/jss-ffi`. This skill only briefly checks FFI-related unsafe to avoid duplication.
 
 ## Scan Scope
 
@@ -74,7 +74,7 @@ Always exclude `target/` and `vendor/`.
 
 - Panic potential inside `extern "C"` fn → Warning (process abort)
 - Null pointer dereference without check → Critical
-- Detailed FFI checks are in `/secure-scan-ffi`. This skill only checks the above 2 items.
+- Detailed FFI checks are in `/jss-ffi`. This skill only checks the above 2 items.
 
 ## Statistics Output
 
