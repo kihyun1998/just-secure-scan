@@ -102,6 +102,19 @@ Produce a single unified report combining all scan results:
 ## Suppressed ([N] items)
 > Items suppressed via .secure-scan-ignore or inline comments.
 
+## Improvement Direction
+
+### Category Analysis
+- Group findings by category (e.g., auth, RLS, secrets, dependencies) and summarize the pattern.
+- Example: "Authentication-related: 3 findings — the authentication layer needs a comprehensive review"
+
+### Priority Roadmap
+- **Phase 1 (Immediate):** List Critical items that must be fixed first
+- **Phase 2 (Short-term):** List Warning items to address next
+- **Phase 3 (Ongoing):** List Info items for long-term hardening
+
+For each phase, briefly explain *why* this ordering matters and what risk remains until resolved.
+
 ---
 **Summary:** [Critical] critical, [Warning] warnings, [Info] info items found.
 **Files analyzed:** [N]
@@ -123,6 +136,7 @@ Example: `sk_l****890a`
 - If an external tool (`npm audit`, `cargo audit`) is unavailable, note it under "Not checked" and continue
 - Respect `$ARGUMENTS` — if the user scoped the scan to a path, do not scan outside it
 - Keep the report concise — if there are more than 20 findings in a category, summarize and list the top 10 with a note "[N] more items omitted"
+- When writing the Improvement Direction section, be mindful of output overflow. Keep category analysis to one line per category. Keep each roadmap phase to 3–5 bullet points max. If there are many findings, group aggressively rather than listing every item
 
 ## Error Handling
 
