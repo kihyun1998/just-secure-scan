@@ -27,7 +27,9 @@ Examine the project root to determine the stack:
 | `package.json` + `next.config.*` (no Supabase) | Next.js (partial support) |
 | `Cargo.toml` with `[lib]` | Rust library crate |
 | `Cargo.toml` with `[[bin]]` only | Rust binary (partial support) |
-| Both `package.json` and `Cargo.toml` | Monorepo — scan both |
+| `pubspec.yaml` with `flutter` SDK dependency | Flutter |
+| `pubspec.yaml` without `flutter` SDK dependency | Dart (partial support) |
+| Multiple of the above | Monorepo — scan all detected stacks |
 
 If the stack is not recognized, report it and run only `/jss-secrets` (works on any project).
 
@@ -45,10 +47,16 @@ Run scans in this order. Earlier scans inform later ones (e.g., secrets found in
 2. `/jss-rust` — full stack-specific scan
 3. Skip `/jss-unsafe`, `/jss-ffi`, `/jss-deps` — already covered by step 2
 
-### For Monorepo (both):
+### For Flutter:
+1. `/jss-secrets` — broadest, stack-agnostic
+2. `/jss-flutter` — full stack-specific scan
+3. Skip `/jss-deps` — already covered by step 2
+
+### For Monorepo (multiple stacks):
 1. `/jss-secrets` — once for entire repo
-2. `/jss-nextjs` — scoped to frontend directory
-3. `/jss-rust` — scoped to Rust crate directory
+2. `/jss-nextjs` — scoped to frontend directory (if Next.js detected)
+3. `/jss-rust` — scoped to Rust crate directory (if Rust detected)
+4. `/jss-flutter` — scoped to Flutter directory (if Flutter detected)
 
 ### When user requests a focused scan:
 If the user asks for a specific area (e.g., "check the RLS policies" or "audit unsafe code"), run only the relevant detail command instead of the full scan:
@@ -57,6 +65,7 @@ If the user asks for a specific area (e.g., "check the RLS policies" or "audit u
 - Unsafe code → `/jss-unsafe`
 - FFI boundary → `/jss-ffi`
 - Dependencies → `/jss-deps`
+- Flutter/Dart security → `/jss-flutter`
 
 ## Pre-scan Checks
 
