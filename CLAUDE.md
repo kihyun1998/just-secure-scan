@@ -1,6 +1,10 @@
-## just-secure-scan — Common Principles
+## just-agents — Common Principles
 
-> The rules below apply only when executing `/jss-*` skills. They do not affect other tasks.
+This repository hosts multiple Claude Code agents and skills across domains (security scan, code review, etc.). Each domain has its own conventions below; rules are scoped by prefix and do not leak across domains.
+
+## Security Scan (`/jss-*`)
+
+> The rules in this section apply only when executing `/jss-*` skills. They do not affect other tasks.
 
 ### Severity Levels
 
