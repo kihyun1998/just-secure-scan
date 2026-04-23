@@ -87,5 +87,5 @@ Check if tracked by git (`git ls-files`):
 
 ## Output
 
-Follow the common output format in CLAUDE.md.
+Follow the common output format in CLAUDE.md, including the inline axis line (Confidence / Blast / Layer) under every finding.
 All discovered secret values MUST be masked (first 4 chars + `****` + last 4 chars).

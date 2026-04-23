@@ -80,7 +80,7 @@ If available, parse results and classify by severity. If unavailable, read `pubs
 
 ## Output
 
-Follow the common output format in CLAUDE.md.
+Follow the common output format in CLAUDE.md, including the inline axis line (Confidence / Blast / Layer) under every finding.
 Additionally output a dependency summary:
 
 ```

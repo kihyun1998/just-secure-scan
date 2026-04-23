@@ -104,4 +104,4 @@ Follow suppression rules in CLAUDE.md.
 
 ## Output
 
-Follow the common output format in CLAUDE.md.
+Follow the common output format in CLAUDE.md, including the inline axis line (Confidence / Blast / Layer) under every finding.

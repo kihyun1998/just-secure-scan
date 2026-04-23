@@ -96,33 +96,64 @@ Produce a single unified report combining all scan results:
 
 ## Critical — Immediate action required
 - `file:line` — [finding]
+  Confidence: [High/Medium/Low] · Blast: [Record/Table/Database/Infrastructure] · Layer: [Auth/Authz/Input/Output/Transport/Config/Supply chain]
   **Impact:** [what an attacker can do]
   **Fix:** [specific remediation]
 
 ## Warning — Review required
 - `file:line` — [finding]
+  Confidence: [...] · Layer: [...]    # Blast omitted if not applicable
   **Impact:** [conditions under which this is exploitable]
   **Fix:** [specific remediation]
 
 ## Info — Recommendations
 - `file:line` — [finding]
+  Confidence: [...] · Layer: [...]
   **Fix:** [suggested improvement]
 
 ## Suppressed ([N] items)
 > Items suppressed via .secure-scan-ignore or inline comments.
 
-## Improvement Direction
+## Attacker Scenarios
 
-### Category Analysis
-- Group findings by category (e.g., auth, RLS, secrets, dependencies) and summarize the pattern.
-- Example: "Authentication-related: 3 findings — the authentication layer needs a comprehensive review"
+Pick the top 2–3 most severe chains and stitch findings into end-to-end attack paths
+from an unauthenticated outsider's perspective. Each scenario references findings by
+their file:line. Show how isolated findings combine into actual compromise.
 
-### Priority Roadmap
-- **Phase 1 (Immediate):** List Critical items that must be fixed first
-- **Phase 2 (Short-term):** List Warning items to address next
-- **Phase 3 (Ongoing):** List Info items for long-term hardening
+Example:
+### Scenario 1: full users table read as unauthenticated outsider
+1. Hit `/api/admin/users` (Finding #3 — missing auth, Layer: Auth)
+2. Response leaks email + role (Finding #7 — over-exposed columns, Layer: Authz)
+3. No rate limit (Finding #11 — Layer: Config)
+Outcome: attacker dumps full users table in a single unauthenticated request loop.
 
-For each phase, briefly explain *why* this ordering matters and what risk remains until resolved.
+If no Critical findings exist, skip this section.
+
+## Systemic Patterns
+
+Group findings by **Defense layer** (not category). If 3+ findings share a layer,
+promote the layer itself to a top-level concern — it signals the whole layer is thin,
+not isolated bugs.
+
+Example:
+### Systemic: Auth layer (4 findings across 3 files)
+Middleware matcher excludes `/api/admin/*`, 2 Server Actions skip session check, 1
+API route trusts client-provided `user_id`. Recommendation: audit every auth
+checkpoint in the codebase, not just these 4 lines — the pattern suggests missing
+shared auth guard.
+
+Only emit a layer section if it has 3+ findings. Layers with 1–2 findings appear
+under their severity sections above and don't need promotion.
+
+## Priority Roadmap
+- **Phase 1 (Immediate):** Critical items, highest Confidence first. Resolve every
+  `Confidence: High` Critical before moving on.
+- **Phase 2 (Short-term):** Remaining Critical (lower confidence) + all Warning items.
+- **Phase 3 (Ongoing):** Info items; systemic-pattern remediation that spans multiple
+  files.
+
+For each phase, briefly explain *why* this ordering matters and what risk remains
+until resolved.
 
 ---
 **Summary:** [Critical] critical, [Warning] warnings, [Info] info items found.
@@ -145,7 +176,10 @@ Example: `sk_l****890a`
 - If an external tool (`npm audit`, `cargo audit`) is unavailable, note it under "Not checked" and continue
 - Respect `$ARGUMENTS` — if the user scoped the scan to a path, do not scan outside it
 - Keep the report concise — if there are more than 20 findings in a category, summarize and list the top 10 with a note "[N] more items omitted"
-- When writing the Improvement Direction section, be mindful of output overflow. Keep category analysis to one line per category. Keep each roadmap phase to 3–5 bullet points max. If there are many findings, group aggressively rather than listing every item
+- When writing the Attacker Scenarios section, cap at 2–3 scenarios. Each scenario: 3–4 numbered steps max, one-line outcome. Don't narrate — reference findings by file:line and describe the chain.
+- When writing the Systemic Patterns section, one paragraph per layer. Only include layers with 3+ findings. Don't re-list the individual findings; they already appear above under severity sections.
+- Keep each Priority Roadmap phase to 3–5 bullets. If many findings, group aggressively rather than listing every item.
+- Every per-finding block must include the inline axis line (`Confidence · Blast · Layer`). Omit Blast when not applicable (e.g., missing security headers).
 
 ## Error Handling
 

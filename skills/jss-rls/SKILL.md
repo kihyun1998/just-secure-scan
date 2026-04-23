@@ -73,7 +73,7 @@ Excluded tables (auto-skip): `_prisma_migrations`, `schema_migrations`, `__drizz
 
 ## Output
 
-Follow the common output format in CLAUDE.md.
+Follow the common output format in CLAUDE.md, including the inline axis line (Confidence / Blast / Layer) under every finding.
 Additionally output an RLS status summary table:
 
 ```
