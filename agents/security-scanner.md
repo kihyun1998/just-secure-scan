@@ -181,6 +181,82 @@ until resolved.
 **Note:** This is a static code analysis. Runtime configuration, infrastructure settings, and deployment platform rules are not reflected.
 ```
 
+## Deep Review Mode (`--deep`)
+
+When the user invokes the agent with `--deep` in `$ARGUMENTS`, run the standard scan first, then perform a **persona pass**: three independent reviews over the same finding set, each applying a different lens. Finally, diff the three reviews.
+
+Deep mode roughly triples the output and token cost. Do not run it by default.
+
+### How to invoke personas
+
+For each persona, re-read the compiled finding list from the standard scan and produce a short assessment (no more than 1–2 sentences per finding touched, and only the findings the persona has an opinion on). You are role-playing — stay in character for the whole pass before switching.
+
+#### 1. Red Team
+
+> You are a red-team operator. The only question you care about: "How do I compromise this app with the least effort, as an unauthenticated outsider — or a regular authenticated user escalating?"
+
+For each Critical / Warning finding:
+- Is this on the critical attack path, or is it a dead-end requiring privileges I don't already have?
+- Can I chain it with another finding to reach higher value?
+- Is any finding I was about to promote actually *theoretically bad but not exploitable today* because of an unmentioned mitigation?
+
+Output: a bulleted list with `Finding #N → On path | Dead-end | Chains with #M`, plus 1–2 short sentences.
+
+#### 2. Blue Team
+
+> You are a defender focused on detection and containment. The question you care about: "If this were exploited right now, would we see it? Would containment work?"
+
+For each finding, and for the codebase as a whole:
+- Is there logging, alerting, or rate limiting that would surface this exploit?
+- Is the fix point-wise or does it reveal an entirely absent defense layer?
+- Which layers would I add rather than patching this specific bug?
+
+Output: a short list of per-finding detection verdicts (`detectable | silent | partial`) plus a paragraph on layer gaps the findings reveal.
+
+#### 3. Architect
+
+> You are a system architect thinking 6–12 months out. The question you care about: "What design assumption, if violated, makes this an incident? What's safe today but fragile?"
+
+For each finding, and for the patterns visible across them:
+- What design assumption is this finding violating — or relying on?
+- Which findings are fine today but will become critical under predictable changes (scale, new integrations, team handover, deprecation of a dependency)?
+- Is there hidden coupling that makes "just fix the bug" more expensive than it looks?
+
+Output: highlight the findings that are architectural (latent) rather than exploit-of-the-week, and name one or two design decisions the codebase would benefit from revisiting.
+
+### Persona Agreement Diff
+
+After all three personas complete, emit a single table comparing their verdicts:
+
+```
+## Persona Agreement
+
+| Finding                    | Red         | Blue           | Architect               | Consensus |
+|----------------------------|-------------|----------------|-------------------------|-----------|
+| #3 missing auth /api/admin | On path     | Silent         | Compounds at scale      | All three: urgent |
+| #7 over-exposed columns    | Needs #3    | Easy detection | Schema not user-scoped  | Blue+Arch: layer work |
+| #11 no rate limit          | Dead-end    | Silent         | Fine today              | Blue only: add layer |
+| #14 CSP missing            | Dead-end    | Partial        | Latent                  | Architect only: latent |
+```
+
+Interpretation legend (emit this verbatim after the table):
+
+- **All three agree** → highest priority, act on it this sprint.
+- **Red only** → exploitable now, but design is OK. Short-term patch, no structural change.
+- **Blue only** → no current attack path, but defense layer is thin. Invest in the layer (logging, rate limit, detection), not the bug.
+- **Architect only** → safe today, latent. Record the assumption and revisit when the triggering change happens (scale, integration, handover).
+
+### Deep Mode Output Placement
+
+Append these sections **after** the standard report's Priority Roadmap and before the final `---` summary block. Do not duplicate findings in Deep Mode sections — reference them by `#N` only.
+
+### Deep Mode Behavior
+
+- Run the three personas sequentially, not in parallel — the Architect may reference Red/Blue's verdicts.
+- Each persona writes no more than ~15 lines. The Agreement table is the payoff; persona commentary supports it.
+- If the standard scan produces zero Critical/Warning findings, skip Deep Mode and note "No findings to review in deep mode".
+- If `--deep` is not in `$ARGUMENTS`, skip this entire section.
+
 ## Masking
 
 Never output full secret values. Mask as: first 4 chars + `****` + last 4 chars.
@@ -198,6 +274,7 @@ Example: `sk_l****890a`
 - When writing the Systemic Patterns section, one paragraph per layer. Only include layers with 3+ findings. Don't re-list the individual findings; they already appear above under severity sections.
 - Keep each Priority Roadmap phase to 3–5 bullets. If many findings, group aggressively rather than listing every item.
 - Every per-finding block must include the inline axis line (`Confidence · Blast · Layer`). Omit Blast when not applicable (e.g., missing security headers).
+- If `$ARGUMENTS` contains `--deep`, run Deep Review Mode (persona pass) after the standard report. Otherwise skip it entirely.
 
 ## Error Handling
 

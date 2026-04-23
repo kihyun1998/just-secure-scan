@@ -240,8 +240,8 @@ Parallel-friendly with Phase 2; independent of the security evaluation model.
 ### Phase 4 — Optional
 
 13. Additional state-mgmt references (`state-bloc.md`, `state-redux-toolkit.md`, `state-jotai.md`) — on demand only.
-14. Persona pass (`--deep` flag on `security-scanner`): Red team / Blue team / Architect perspectives, diffed against each other.
-15. Fixture projects for new skills (`test-fixtures/vulnerable-tauri/`, `test-fixtures/vulnerable-flutter-desktop/`).
+14. ✅ Persona pass (`--deep` flag on `security-scanner`): Red team / Blue team / Architect perspectives, diffed against each other.
+15. ~~Fixture projects~~ — dropped. Without an automated verification pipeline the yml quickly drifts from reality; reconsider only if we build `tools/verify.py` (or equivalent) first.
 
 ---
 

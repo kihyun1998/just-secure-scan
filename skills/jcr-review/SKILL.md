@@ -65,6 +65,8 @@ Selectively reference the appropriate references based on the characteristics of
 - `references/error-handling.md` — when evaluating error handling patterns
 - `references/style.md` — when checking code style consistency
 - `references/flutter-dart.md` — when reviewing Flutter/Dart code (widget design, state management, async patterns, Dart conventions)
+- `references/state-riverpod.md` — when reviewing Flutter projects that use Riverpod (or could — apply principles even if the project uses a different state library)
+- `references/state-zustand.md` — when reviewing React / Next.js / Tauri web frontends (apply principles even if the project uses Redux/Jotai/Recoil)
 
 ## Severity Criteria
 

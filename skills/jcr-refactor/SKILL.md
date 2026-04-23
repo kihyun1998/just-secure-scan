@@ -29,6 +29,8 @@ Shares references with jcr-review. Used as criteria for refactoring decisions:
 - `../jcr-review/references/comments.md` — cleaning up comments
 - `../jcr-review/references/style.md` — unifying style
 - `../jcr-review/references/flutter-dart.md` — Flutter/Dart specific refactoring (widget decomposition, state management, async patterns)
+- `../jcr-review/references/state-riverpod.md` — Riverpod patterns (ref lifecycle, provider scoping, AsyncValue, modifier chains) — Flutter projects
+- `../jcr-review/references/state-zustand.md` — Zustand patterns (selectors, slices, persist, SSR/hydration) — React / Next.js / Tauri web frontends
 
 ## Refactoring Procedure
 

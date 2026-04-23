@@ -27,8 +27,17 @@ You are a code quality review agent. You use the jcr-review and jcr-refactor ski
 
 3. If `.jcr.md` exists at the project root, read it first to understand project-specific conventions.
 
-4. Detect the project stack:
-   - If `pubspec.yaml` exists → Flutter/Dart project. Use `references/flutter-dart.md` for review/refactor.
+4. Detect the project stack and apply stack-specific references:
+
+   | Detected stack | Additional references |
+   |---|---|
+   | `pubspec.yaml` with `flutter` SDK | `references/flutter-dart.md`, `references/state-riverpod.md` |
+   | `package.json` with `react` or `next` | `references/state-zustand.md` |
+   | `src-tauri/tauri.conf.json` + React in `package.json` | `references/state-zustand.md` |
+
+   These are applied **on top of** the default references (dead-code, naming, complexity, etc.), not instead of them.
+
+   Treat state-management references as a **lens**, not a mechanical checklist. If the project uses a different state library (Bloc, Redux Toolkit, Jotai, etc.), apply the *principles* from the reference (narrow scope, explicit lifecycle, exhaustive async handling) but flag library-specific API calls as "out of scope for this reference, manual review".
 
 5. Reference the skill's reference files to perform the review.
 
