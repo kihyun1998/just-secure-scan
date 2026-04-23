@@ -26,7 +26,9 @@ Claude Code agents and skills across multiple domains — security scanning and 
 | `jss-rust` | Comprehensive Rust crate |
 | `jss-unsafe` | Focused Rust `unsafe` block scan |
 | `jss-ffi` | Rust FFI boundary |
-| `jss-flutter` | Comprehensive Flutter / Dart |
+| `jss-tauri` | Tauri frontend↔backend bridge (allowlist, CSP, IPC, updater) |
+| `jss-flutter` | Flutter / Dart, mobile-oriented |
+| `jss-flutter-desktop` | Flutter desktop (Windows/macOS/Linux) — file, process, FFI, registry, updater |
 
 **Code Review — `/jcr-*`**
 
@@ -92,6 +94,8 @@ See `CLAUDE.md` for the full suppression spec.
 /jss-nextjs               # full Next.js + Supabase scan
 /jss-rust src/core/       # scope a Rust scan
 /jss-rls                  # RLS-only check
+/jss-tauri                # Tauri bridge / IPC / allowlist
+/jss-flutter-desktop      # Flutter desktop-specific issues
 
 # Orchestrated (auto-detects stack)
 @security-scanner

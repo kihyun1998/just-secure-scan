@@ -27,8 +27,10 @@ Examine the project root to determine the stack:
 | `package.json` + `next.config.*` (no Supabase) | Next.js (partial support) |
 | `Cargo.toml` with `[lib]` | Rust library crate |
 | `Cargo.toml` with `[[bin]]` only | Rust binary (partial support) |
-| `pubspec.yaml` with `flutter` SDK dependency | Flutter |
-| `pubspec.yaml` without `flutter` SDK dependency | Dart (partial support) |
+| `src-tauri/tauri.conf.json` (or `src-tauri/Tauri.toml`) | Tauri |
+| `pubspec.yaml` with `flutter` SDK | Flutter (mobile-oriented) |
+| `pubspec.yaml` with `flutter` SDK + `windows/` or `macos/` or `linux/` | Flutter (mobile) + Flutter desktop — run both |
+| `pubspec.yaml` without `flutter` SDK | Dart (partial support) |
 | Multiple of the above | Monorepo — scan all detected stacks |
 
 If the stack is not recognized, report it and run only `/jss-secrets` (works on any project).
@@ -47,16 +49,30 @@ Run scans in this order. Earlier scans inform later ones (e.g., secrets found in
 2. `/jss-rust` — full stack-specific scan
 3. Skip `/jss-unsafe`, `/jss-ffi`, `/jss-deps` — already covered by step 2
 
-### For Flutter:
+### For Flutter (mobile-only, no desktop folders):
 1. `/jss-secrets` — broadest, stack-agnostic
-2. `/jss-flutter` — full stack-specific scan
+2. `/jss-flutter` — mobile-oriented scan
 3. Skip `/jss-deps` — already covered by step 2
+
+### For Flutter desktop (windows/ or macos/ or linux/ present):
+1. `/jss-secrets`
+2. `/jss-flutter` — mobile checks still apply (storage, network, WebView)
+3. `/jss-flutter-desktop` — desktop-specific (file, process, FFI DLL, registry, updater)
+4. Skip `/jss-deps` — covered by step 2
+
+### For Tauri:
+1. `/jss-secrets`
+2. `/jss-tauri` — bridge/config only (allowlist, CSP, IPC, updater)
+3. `/jss-rust` scoped to `src-tauri/` — Rust language issues
+4. Skip `/jss-unsafe`, `/jss-ffi`, `/jss-deps` — covered by step 3
 
 ### For Monorepo (multiple stacks):
 1. `/jss-secrets` — once for entire repo
 2. `/jss-nextjs` — scoped to frontend directory (if Next.js detected)
 3. `/jss-rust` — scoped to Rust crate directory (if Rust detected)
-4. `/jss-flutter` — scoped to Flutter directory (if Flutter detected)
+4. `/jss-tauri` — if Tauri detected (in addition to scoped `/jss-rust` on `src-tauri/`)
+5. `/jss-flutter` — scoped to Flutter directory (if Flutter detected)
+6. `/jss-flutter-desktop` — if desktop folders present
 
 ### When user requests a focused scan:
 If the user asks for a specific area (e.g., "check the RLS policies" or "audit unsafe code"), run only the relevant detail command instead of the full scan:
@@ -65,7 +81,9 @@ If the user asks for a specific area (e.g., "check the RLS policies" or "audit u
 - Unsafe code → `/jss-unsafe`
 - FFI boundary → `/jss-ffi`
 - Dependencies → `/jss-deps`
-- Flutter/Dart security → `/jss-flutter`
+- Flutter/Dart mobile security → `/jss-flutter`
+- Flutter desktop security → `/jss-flutter-desktop`
+- Tauri bridge / IPC → `/jss-tauri`
 
 ## Pre-scan Checks
 
